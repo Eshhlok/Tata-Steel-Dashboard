@@ -22,6 +22,7 @@ const EnvironmentPage = lazy(() => import("./pages/EnvironmentPage"));
 const TargetsPage     = lazy(() => import("./pages/TargetPage"));
 const AlertsPage      = lazy(() => import("./pages/AlertPage").then(m => ({ default: m.AlertsPage })));
 const ReportPage = React.lazy(() => import("./pages/ReportPage"));
+const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
 
 
 const PageLoader = () => (
@@ -58,7 +59,7 @@ function AppShell() {
             <main className="flex-1 p-4 w-full">
               <Suspense fallback={<PageLoader />}>
                 <Switch>
-                  <Route path="/" component={Dashboard} />
+                  <Route path="/" component={ExecutiveDashboard} />
                   <Route path="/production" component={ProductionPage} />
                   <Route path="/quality" component={QualityPage} />
                   <Route path="/cost" component={CostPage} />
