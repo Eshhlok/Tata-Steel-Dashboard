@@ -149,3 +149,23 @@ export const alerts = [
     unit: "ARP",
   },
 ];
+export const buildings = [
+  {
+    id: "cold-rolling",
+    name: "Cold Rolling Mill",
+    units: 6,
+    score: 92,
+  },
+  {
+    id: "utilities",
+    name: "Utilities & Services",
+    units: 3,
+    score: 91,
+  },
+  {
+    id: "processing",
+    name: "Processing Lines",
+    units: 1,
+    score: 93,
+  },
+];

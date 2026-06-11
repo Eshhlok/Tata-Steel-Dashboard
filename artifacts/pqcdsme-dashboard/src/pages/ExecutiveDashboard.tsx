@@ -1,16 +1,14 @@
 import PlantHealthCard from "../components/PlantHealthCard";
 import KPIOverviewCard from "../components/KPIOverviewCard";
-import { alerts, achievements, units } from "../mock/data";
+import { alerts, achievements, units, buildings } from "../mock/data";
 import AlertDashboard from "@/components/AlertDashboard";
 import AchievementsCard from "@/components/AchievementsCard";
 import UnitRankingTable from "@/components/UnitRankingTable";
+import BuildingOverviewCard from "@/components/BuildingOverviewCard";
 
 export default function ExecutiveDashboard() {
    console.log("EXECUTIVE DASHBOARD LOADED");
   return (
-    
-
-
     <div className="max-w-[1600px] mx-auto space-y-6">
       <PlantHealthCard score={91} />
 
@@ -76,9 +74,24 @@ export default function ExecutiveDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <AchievementsCard achievements={achievements} />
         <AlertDashboard alerts={alerts} />
-        <UnitRankingTable units={units} />
+        
       </div>
+      <UnitRankingTable units={units} />
+      <h2 className="text-xl font-semibold">
+        Building Overview
+      </h2>
 
+      <div className="grid md:grid-cols-3 gap-4">
+        {buildings.map((building) => (
+          <BuildingOverviewCard
+            key={building.id}
+            name={building.name}
+            units={building.units}
+            score={building.score}
+          />
+        ))}
     </div>
+  </div>
   );
+
 }
