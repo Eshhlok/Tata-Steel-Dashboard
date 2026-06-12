@@ -8,13 +8,13 @@ import {
 } from "recharts";
 
 const data = [
-  { day: "Mon", score: 87 },
-  { day: "Tue", score: 88 },
-  { day: "Wed", score: 89 },
-  { day: "Thu", score: 90 },
-  { day: "Fri", score: 91 },
-  { day: "Sat", score: 91 },
-  { day: "Sun", score: 91 },
+  { day: "6 Jun", score: 87 },
+  { day: "7 Jun", score: 88 },
+  { day: "8 Jun", score: 89 },
+  { day: "9 Jun", score: 90 },
+  { day: "10 Jun", score: 91 },
+  { day: "11 Jun", score: 91 },
+  { day: "12 Jun", score: 91 },
 ];
 const currentScore = 91;
 const previousScore = 88;
@@ -59,10 +59,10 @@ export default function PlantHealthTrend() {
         </p>
       </div>
 
-      <div className="h-64">
+      <div className="h-50">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <XAxis dataKey="day" />
+          <LineChart data={data} margin={{top: 10,right: 30,left: 30,bottom: 10,}} >
+            <XAxis dataKey="day" interval={0} tick={{ fontSize: 16 }}/>
              <YAxis hide domain={[86, 92]}/>
             <Tooltip />
 
@@ -71,7 +71,7 @@ export default function PlantHealthTrend() {
               dataKey="score"
               stroke="#378ADD"
               strokeWidth={3}
-              dot={{ r: 4 }}
+              activeDot={{ r: 6 }}
             />
           </LineChart>
         </ResponsiveContainer>

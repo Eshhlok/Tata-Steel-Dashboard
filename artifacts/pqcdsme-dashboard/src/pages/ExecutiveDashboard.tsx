@@ -15,7 +15,7 @@ export default function ExecutiveDashboard() {
       <PlantHealthCard score={91} />
       <PlantHealthTrend />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-7 gap-4">
 
         <KPIOverviewCard
           title="Production"
@@ -23,6 +23,7 @@ export default function ExecutiveDashboard() {
           trend="+3.2%"
           best="98%"
           color="#378ADD"
+          
           history={[88, 89, 90, 91, 92, 93, 94]}
         />
 

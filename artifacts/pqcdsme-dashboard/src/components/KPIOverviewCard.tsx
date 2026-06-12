@@ -49,20 +49,30 @@ export default function KPIOverviewCard({
   };
 
   const status = getStatus();
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  const cardTint = hexToRgba(color, 0.03);
 
   return (
     <div
-      className="bg-white border rounded-sm p-4 transition-all duration-200 hover:shadow-md"
+      className="bg-white border rounded-sm px-5 py-6 min-h-[280px] transition-all duration-200 hover:shadow-md"
       style={{
         borderTop: `4px solid ${color}`,
+        backgroundColor: cardTint,
+        opacity: 0.99,
       }}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-center gap-2">
         <div>
           <p className="text-sm text-gray-500">{title}</p>
 
           <h2
-            className="text-3xl font-bold mt-1"
+            className="text-4xl font-bold mt-1"
             style={{ color }}
           >
             {value}%
@@ -81,6 +91,7 @@ export default function KPIOverviewCard({
               : "text-green-600"
           }`}
         >
+          {trend.startsWith("-") ? "▼ " : "▲ "}
           {trend}
         </span>
       </div>
@@ -94,7 +105,10 @@ export default function KPIOverviewCard({
           {best}
         </p>
 
-        <div className="h-16 mt-3">
+        <div className="h-24 mt-3">
+          <p className="text-xs text-gray-400 mt-3">
+            7-Day Trend
+          </p>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
               <YAxis
@@ -110,7 +124,8 @@ export default function KPIOverviewCard({
                 dataKey="value"
                 stroke={color}
                 strokeWidth={3}
-                dot={false}
+                
+                activeDot={{ r: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
