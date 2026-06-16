@@ -1,8 +1,10 @@
 import { parseCRMExcel } from "@/services/excelParser";
 import { CRMKPI, mapCRMRows } from "@/services/crmMapper";
+import { useState } from "react";
 interface Props {
   onDataLoaded: (
-    data: CRMKPI[]
+    data: CRMKPI[],
+    rows: Record<string, any>[]
   ) => void;
 }
 export default function ExcelUploader({ onDataLoaded }: Props
@@ -28,7 +30,7 @@ export default function ExcelUploader({ onDataLoaded }: Props
             parsedData.rows,
             parsedData.months
         );  
-        onDataLoaded(mappedData);
+        onDataLoaded(mappedData, parsedData.rows);
         console.log(
             parsedData.rows.filter(
                 row =>

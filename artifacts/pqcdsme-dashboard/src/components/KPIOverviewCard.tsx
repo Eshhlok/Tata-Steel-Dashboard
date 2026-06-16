@@ -28,6 +28,8 @@ interface KPIOverviewCardProps {
   onSubKPIClick?: (
     subKPIName: string
   ) => void;
+
+  onCardClick?: () => void;
 }
 
 export default function KPIOverviewCard({
@@ -39,6 +41,7 @@ export default function KPIOverviewCard({
   history,
   subKPIs,
   onSubKPIClick,
+  onCardClick,
 }: KPIOverviewCardProps) {
 
   const chartData = history.map(
@@ -48,7 +51,9 @@ export default function KPIOverviewCard({
     })
   );
 
-  const formatValue = (value: number) => {
+  const formatValue = (
+    value: number
+  ) => {
     return value >= 100
       ? value.toFixed(0)
       : value.toFixed(2);
@@ -103,15 +108,32 @@ export default function KPIOverviewCard({
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
+  const isCardClickable =
+    !!onCardClick &&
+    (!subKPIs ||
+      subKPIs.length === 0);
+
   return (
     <div
-      className="bg-white border rounded-sm px-5 py-5 min-h-[270px] hover:shadow-md transition-all duration-200"
+      onClick={() => {
+        if (
+          isCardClickable
+        ) {
+          onCardClick?.();
+        }
+      }}
+      className={`bg-white border rounded-sm px-5 py-5 min-h-[270px] transition-all duration-200 hover:shadow-md ${
+        isCardClickable
+          ? "cursor-pointer"
+          : ""
+      }`}
       style={{
         borderTop: `4px solid ${config.accent}`,
-        backgroundColor: hexToRgba(
-          config.accent,
-          0.03
-        ),
+        backgroundColor:
+          hexToRgba(
+            config.accent,
+            0.03
+          ),
       }}
     >
       <div>
@@ -120,11 +142,11 @@ export default function KPIOverviewCard({
         </p>
 
         <div className="flex items-end gap-2 mt-2">
-
           <h2
             className="text-4xl font-bold"
             style={{
-              color: config.accent,
+              color:
+                config.accent,
             }}
           >
             {formatValue(value)}
@@ -135,7 +157,6 @@ export default function KPIOverviewCard({
               ({uom})
             </span>
           )}
-
         </div>
 
         <div
@@ -146,17 +167,24 @@ export default function KPIOverviewCard({
       </div>
 
       {subKPIs &&
-        subKPIs.length > 0 && (
+        subKPIs.length >
+          0 && (
           <div className="mt-5 space-y-2">
             {subKPIs.map(
               (item) => (
                 <div
-                  key={item.name}
-                  onClick={() =>
+                  key={
+                    item.name
+                  }
+                  onClick={(
+                    e
+                  ) => {
+                    e.stopPropagation();
+
                     onSubKPIClick?.(
                       item.name
-                    )
-                  }
+                    );
+                  }}
                   className="flex items-center justify-between border rounded-md px-3 py-2 hover:bg-slate-100 hover:shadow-sm cursor-pointer transition-all"
                 >
                   <span className="text-sm font-medium">
@@ -164,9 +192,10 @@ export default function KPIOverviewCard({
                   </span>
 
                   <div className="flex items-center gap-3">
-
                     <span className="text-sm">
-                      {formatValue(item.value)}
+                      {formatValue(
+                        item.value
+                      )}
                     </span>
 
                     <div
@@ -184,7 +213,6 @@ export default function KPIOverviewCard({
                     <span className="text-gray-400">
                       →
                     </span>
-
                   </div>
                 </div>
               )
@@ -193,9 +221,7 @@ export default function KPIOverviewCard({
         )}
 
       <div className="mt-5">
-
         <div className="flex justify-between items-center">
-
           <p className="text-xs text-gray-400">
             Historical Best
           </p>
@@ -203,13 +229,10 @@ export default function KPIOverviewCard({
           <p className="text-sm font-medium text-gray-700">
             {formatValue(best)}
           </p>
-
         </div>
-
       </div>
 
       <div className="h-20 mt-4">
-
         <p className="text-xs text-gray-400 mb-2">
           7-Month Trend
         </p>
@@ -218,13 +241,17 @@ export default function KPIOverviewCard({
           width="100%"
           height="100%"
         >
-          <LineChart data={chartData}>
+          <LineChart
+            data={chartData}
+          >
             <YAxis hide />
 
             <Line
               type="monotone"
               dataKey="value"
-              stroke={config.accent}
+              stroke={
+                config.accent
+              }
               strokeWidth={3}
               dot={false}
             />

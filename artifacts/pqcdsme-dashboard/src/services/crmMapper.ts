@@ -182,6 +182,243 @@ function buildRollConsumption(
     ],
   };
 }
+
+function buildMetal(
+  rows: Record<string, any>[],
+  months: string[]
+): CRMKPI | null {
+
+  const drossOverall =
+    rows.find(
+      row =>
+        row.KPI === "Metal" &&
+        row["Sub-KPI"] === "Dross" &&
+        row.Unit === "Overall"
+    );
+
+  const overcoatingOverall =
+    rows.find(
+      row =>
+        row.KPI === "Metal" &&
+        row["Sub-KPI"] === "Overcoating" &&
+        row.Unit === "Overall"
+    );
+
+  if (
+    !drossOverall &&
+    !overcoatingOverall
+  ) {
+    return null;
+  }
+
+  const drossCurrent =
+    drossOverall
+      ? getLatestValue(
+          drossOverall,
+          months
+        )
+      : 0;
+
+  const overcoatingCurrent =
+    overcoatingOverall
+      ? getLatestValue(
+          overcoatingOverall,
+          months
+        )
+      : 0;
+
+  const overallValue =
+    drossCurrent;
+
+  const fy26 =
+    Number(
+      drossOverall?.["FY26 "] ||
+      drossOverall?.["FY26"] ||
+      0
+    );
+
+  return {
+    title: "Metal",
+
+    value: overallValue,
+
+    uom:
+      drossOverall?.UOM || "%",
+
+    best: fy26,
+
+    status: getStatus(
+      overallValue,
+      fy26,
+      "Metal"
+    ),
+
+    history: [],
+
+    subKPIs: [
+      {
+        name: "Dross",
+        value: drossCurrent,
+
+        status: getStatus(
+          drossCurrent,
+          Number(
+            drossOverall?.["FY26 "] ||
+            drossOverall?.["FY26"] ||
+            0
+          ),
+          "Metal"
+        ),
+      },
+
+      {
+        name: "Overcoating",
+        value:
+          overcoatingCurrent,
+
+        status: getStatus(
+          overcoatingCurrent,
+          Number(
+            overcoatingOverall?.["FY26 "] ||
+            overcoatingOverall?.["FY26"] ||
+            0
+          ),
+          "Metal"
+        ),
+      },
+    ],
+  };
+}
+
+function buildRollingOilConsumption(
+  rows: Record<string, any>[],
+  months: string[]
+): CRMKPI | null {
+
+  const overallRow =
+    rows.find(
+      row =>
+        row.KPI ===
+          "Rolling Oil consumption" &&
+        row.Unit ===
+          "Overall"
+    );
+
+  if (!overallRow) {
+    return null;
+  }
+
+  const current =
+    getLatestValue(
+      overallRow,
+      months
+    );
+
+  const fy26 =
+    Number(
+      overallRow["FY26 "] ||
+      overallRow["FY26"] ||
+      0
+    );
+
+  const history =
+    months
+      .filter(
+        month =>
+          overallRow[month] !== ""
+      )
+      .map(
+        month =>
+          Number(
+            overallRow[month]
+          )
+      );
+
+  return {
+    title:
+      "Rolling Oil Consumption",
+
+    value: current,
+
+    uom:
+      overallRow.UOM || "",
+
+    best: fy26,
+
+    status: getStatus(
+      current,
+      fy26,
+      "Rolling Oil consumption"
+    ),
+
+    history,
+  };
+}
+
+function buildLineYield(
+  rows: Record<string, any>[],
+  months: string[]
+): CRMKPI | null {
+
+  const overallRow =
+    rows.find(
+      row =>
+        row.KPI === "Line Yield" &&
+        row.Unit === "Overall"
+    );
+
+  if (!overallRow) {
+    return null;
+  }
+
+  const current =
+    getLatestValue(
+      overallRow,
+      months
+    );
+
+  const fy26 =
+    Number(
+      overallRow["FY26 "] ||
+      overallRow["FY26"] ||
+      0
+    );
+
+  const history =
+    months
+      .filter(
+        month =>
+          overallRow[month] !== "" &&
+          overallRow[month] !== null &&
+          overallRow[month] !== undefined
+      )
+      .map(
+        month =>
+          Number(
+            overallRow[month]
+          )
+      );
+
+  return {
+    title: "Line Yield",
+
+    value: current,
+
+    uom:
+      overallRow.UOM || "%",
+
+    best: fy26,
+
+    status: getStatus(
+      current,
+      fy26,
+      "Line Yield"
+    ),
+
+    history,
+  };
+}
+
 export function mapCRMRows(
   rows: Record<string, any>[],
   months: string[]
@@ -252,10 +489,42 @@ export function mapCRMRows(
     "ROLL CARD:",
     rollConsumption
     );
-  return rollConsumption
-    ? [
-        ...baseKPIs,
-        rollConsumption,
-      ]
-    : baseKPIs;
+  
+  const rollingOil =
+  buildRollingOilConsumption(
+    rows,
+    months
+  );
+  const metal =
+    buildMetal(
+      rows,
+      months
+    );
+  const lineYield =
+    buildLineYield(
+      rows,
+      months
+    );
+    
+  return [
+
+    
+    ...baseKPIs,
+
+    ...(rollConsumption
+      ? [rollConsumption]
+      : []),
+
+    ...(rollingOil
+      ? [rollingOil]
+      : []),
+
+    ...(metal
+      ? [metal]
+      : []),
+
+    ...(lineYield
+      ? [lineYield]
+      : []),
+  ];
 }
