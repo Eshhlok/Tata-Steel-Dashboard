@@ -2,12 +2,25 @@ import type { KPIStatus } from "@/components/KPIOverviewCard";
 
 export interface CRMKPI {
   title: string;
+
   value: number;
+
   uom: string;
+
   best: number;
+
   status: KPIStatus;
+
   history: number[];
+
+  subKPIs?: {
+    name: string;
+    value: number;
+    status: KPIStatus;
+  }[];
 }
+
+
 
 function getLatestValue(
   row: Record<string, any>,
@@ -62,22 +75,125 @@ function getStatus(
     ? "green"
     : "red";
 }
+function buildRollConsumption(
+  rows: Record<string, any>[],
+  months: string[]
+): CRMKPI | null {
 
+  const workRollOverall =
+    rows.find(
+      row =>
+        row.KPI === "Roll Consumption" &&
+        row["Sub-KPI"] === "Work Roll" &&
+        row.Unit === "Overall"
+    );
+
+  const imrRollOverall =
+    rows.find(
+      row =>
+        row.KPI === "Roll Consumption" &&
+        row["Sub-KPI"] === "IMR Roll" &&
+        row.Unit === "Overall"
+    );
+
+  if (
+    !workRollOverall &&
+    !imrRollOverall
+  ) {
+    return null;
+  }
+
+  const workCurrent =
+    workRollOverall
+      ? getLatestValue(
+          workRollOverall,
+          months
+        )
+      : 0;
+
+  const imrCurrent =
+    imrRollOverall
+      ? getLatestValue(
+          imrRollOverall,
+          months
+        )
+      : 0;
+        console.log("WORK CURRENT:", workCurrent);
+        console.log("IMR CURRENT:", imrCurrent);
+  const overallValue =
+    (workCurrent + imrCurrent) / 2;
+
+  const fy26 =
+    Number(
+      workRollOverall?.["FY26 "] ||
+      workRollOverall?.["FY26"] ||
+      0
+    );
+
+  return {
+    title: "Roll Consumption",
+
+    value: Number(
+      overallValue.toFixed(3)
+    ),
+
+    uom:
+      workRollOverall?.UOM ??
+      "mm/kt",
+
+    best: fy26,
+
+    status: getStatus(
+      overallValue,
+      fy26,
+      "Roll Consumption"
+    ),
+
+    history: [],
+
+    subKPIs: [
+      {
+        name: "Work Roll",
+        value: workCurrent,
+        status: getStatus(
+          workCurrent,
+          Number(
+            workRollOverall?.["FY26 "] ||
+            workRollOverall?.["FY26"] ||
+            0
+          ),
+          "Roll Consumption"
+        ),
+      },
+
+      {
+        name: "IMR Roll",
+        value: imrCurrent,
+        status: getStatus(
+          imrCurrent,
+          Number(
+            imrRollOverall?.["FY26 "] ||
+            imrRollOverall?.["FY26"] ||
+            0
+          ),
+          "Roll Consumption"
+        ),
+      },
+    ],
+  };
+}
 export function mapCRMRows(
   rows: Record<string, any>[],
   months: string[]
 ): CRMKPI[] {
 
-  return rows
+  const baseKPIs = rows
     .filter(
       (row) =>
-        row.Unit ===
-          "Overall" &&
+        row.Unit === "Overall" &&
         (
-          row.KPI ===
-            "RLNG Consumption" ||
-          row.KPI ===
-            "Power Consumption"
+          row.KPI === "RLNG Consumption" ||
+          row.KPI === "Power Consumption"
         )
     )
     .map((row) => {
@@ -90,7 +206,9 @@ export function mapCRMRows(
 
       const fy26 =
         Number(
-           row["FY26 "] ||row["FY26"] || 0
+          row["FY26 "] ||
+          row["FY26"] ||
+          0
         );
 
       const history =
@@ -111,19 +229,33 @@ export function mapCRMRows(
 
         value: current,
 
-        uom:
-          row.UOM || "",
+        uom: row.UOM || "",
 
         best: fy26,
 
-        status:
-          getStatus(
-            current,
-            fy26,
-            row.KPI
-          ),
+        status: getStatus(
+          current,
+          fy26,
+          row.KPI
+        ),
 
         history,
       };
     });
+
+  const rollConsumption =
+    buildRollConsumption(
+      rows,
+      months
+    );
+    console.log(
+    "ROLL CARD:",
+    rollConsumption
+    );
+  return rollConsumption
+    ? [
+        ...baseKPIs,
+        rollConsumption,
+      ]
+    : baseKPIs;
 }
