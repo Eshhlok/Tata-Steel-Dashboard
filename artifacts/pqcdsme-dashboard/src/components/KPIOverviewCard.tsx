@@ -5,132 +5,237 @@ import {
   YAxis,
 } from "recharts";
 
+interface SubKPI {
+  name: string;
+  value: number;
+  status: "green" | "yellow" | "red";
+}
+
 interface KPIOverviewCardProps {
   title: string;
   value: number;
-  trend: string;
-  best: string;
-  color: string;
+
+  uom?: string;
+
+  best: number;
+
+  status: "green" | "yellow" | "red";
+
   history: number[];
+
+  subKPIs?: SubKPI[];
+
+  onSubKPIClick?: (
+    subKPIName: string
+  ) => void;
 }
 
 export default function KPIOverviewCard({
   title,
   value,
-  trend,
+  uom,
   best,
-  color,
+  status,
   history,
+  subKPIs,
+  onSubKPIClick,
 }: KPIOverviewCardProps) {
-  const chartData = history.map((value, index) => ({
-    day: index + 1,
-    value,
-  }));
 
-  const getStatus = () => {
-    if (value >= 95) {
-      return {
-        label: "Excellent",
-        color: "bg-green-100 text-green-700",
-      };
-    }
+  const chartData = history.map(
+    (value, index) => ({
+      month: index + 1,
+      value,
+    })
+  );
 
-    if (value >= 90) {
-      return {
-        label: "Good",
-        color: "bg-blue-100 text-blue-700",
-      };
-    }
-
-    return {
-      label: "Attention",
-      color: "bg-orange-100 text-orange-700",
-    };
+  const formatValue = (value: number) => {
+    return value >= 100
+      ? value.toFixed(0)
+      : value.toFixed(2);
   };
 
-  const status = getStatus();
-  const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
+  const statusConfig = {
+    green: {
+      label: "Better than FY26",
+      badge:
+        "bg-green-100 text-green-700",
+      accent: "#1D9E75",
+    },
+
+    yellow: {
+      label: "At FY26 Level",
+      badge:
+        "bg-yellow-100 text-yellow-700",
+      accent: "#BA7517",
+    },
+
+    red: {
+      label: "Worse than FY26",
+      badge:
+        "bg-red-100 text-red-700",
+      accent: "#E24B4A",
+    },
+  };
+
+  const config =
+    statusConfig[status] ??
+    statusConfig.green;
+
+  const hexToRgba = (
+    hex: string,
+    alpha: number
+  ) => {
+    const r = parseInt(
+      hex.slice(1, 3),
+      16
+    );
+
+    const g = parseInt(
+      hex.slice(3, 5),
+      16
+    );
+
+    const b = parseInt(
+      hex.slice(5, 7),
+      16
+    );
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
-  const cardTint = hexToRgba(color, 0.03);
 
   return (
     <div
-      className="bg-white border rounded-sm px-5 py-6 min-h-[280px] transition-all duration-200 hover:shadow-md"
+      className="bg-white border rounded-sm px-5 py-5 min-h-[270px] hover:shadow-md transition-all duration-200"
       style={{
-        borderTop: `4px solid ${color}`,
-        backgroundColor: cardTint,
-        opacity: 0.99,
+        borderTop: `4px solid ${config.accent}`,
+        backgroundColor: hexToRgba(
+          config.accent,
+          0.03
+        ),
       }}
     >
-      <div className="flex justify-between items-center gap-2">
-        <div>
-          <p className="text-sm text-gray-500">{title}</p>
+      <div>
+        <p className="text-sm text-gray-500">
+          {title}
+        </p>
+
+        <div className="flex items-end gap-2 mt-2">
 
           <h2
-            className="text-4xl font-bold mt-1"
-            style={{ color }}
+            className="text-4xl font-bold"
+            style={{
+              color: config.accent,
+            }}
           >
-            {value}%
+            {formatValue(value)}
           </h2>
-          <div
-            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium mt-2 ${status.color}`}
-          >
-            {status.label}
-          </div>
+
+          {uom && (
+            <span className="text-xs text-gray-500 mb-1">
+              ({uom})
+            </span>
+          )}
+
         </div>
 
-        <span
-          className={`text-xs font-medium ${
-            trend.startsWith("-")
-              ? "text-red-600"
-              : "text-green-600"
-          }`}
+        <div
+          className={`inline-flex px-2 py-1 rounded-full text-xs font-medium mt-2 ${config.badge}`}
         >
-          {trend.startsWith("-") ? "▼ " : "▲ "}
-          {trend}
-        </span>
+          {config.label}
+        </div>
       </div>
 
-      <div className="mt-4">
-        <p className="text-xs text-gray-400">
-          Historical Best
-        </p>
+      {subKPIs &&
+        subKPIs.length > 0 && (
+          <div className="mt-5 space-y-2">
+            {subKPIs.map(
+              (item) => (
+                <div
+                  key={item.name}
+                  onClick={() =>
+                    onSubKPIClick?.(
+                      item.name
+                    )
+                  }
+                  className="flex items-center justify-between border rounded-md px-3 py-2 hover:bg-slate-100 hover:shadow-sm cursor-pointer transition-all"
+                >
+                  <span className="text-sm font-medium">
+                    {item.name}
+                  </span>
 
-        <p className="text-sm font-medium text-gray-700">
-          {best}
-        </p>
+                  <div className="flex items-center gap-3">
 
-        <div className="h-24 mt-3">
-          <p className="text-xs text-gray-400 mt-3">
-            7-Day Trend
+                    <span className="text-sm">
+                      {formatValue(item.value)}
+                    </span>
+
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        item.status ===
+                        "green"
+                          ? "bg-green-500"
+                          : item.status ===
+                            "yellow"
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
+                      }`}
+                    />
+
+                    <span className="text-gray-400">
+                      →
+                    </span>
+
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        )}
+
+      <div className="mt-5">
+
+        <div className="flex justify-between items-center">
+
+          <p className="text-xs text-gray-400">
+            Historical Best
           </p>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <YAxis
-                hide
-                domain={[
-                  Math.min(...history) - 1,
-                  Math.max(...history) + 1,
-                ]}
-              />
 
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke={color}
-                strokeWidth={3}
-                
-                activeDot={{ r: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <p className="text-sm font-medium text-gray-700">
+            {formatValue(best)}
+          </p>
+
         </div>
+
+      </div>
+
+      <div className="h-20 mt-4">
+
+        <p className="text-xs text-gray-400 mb-2">
+          7-Month Trend
+        </p>
+
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+        >
+          <LineChart data={chartData}>
+            <YAxis hide />
+
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke={config.accent}
+              strokeWidth={3}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
 }
+
+export type KPIStatus =
+  | "green"
+  | "yellow"
+  | "red";

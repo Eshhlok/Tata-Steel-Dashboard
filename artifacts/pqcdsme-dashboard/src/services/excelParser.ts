@@ -1,5 +1,4 @@
 import * as XLSX from "xlsx";
-import { ParsedCRMData } from "@/types/crm";
 
 const FIXED_COLUMNS = [
   "S No.",
@@ -13,13 +12,15 @@ const FIXED_COLUMNS = [
 
 export async function parseCRMExcel(
   file: File
-): Promise<ParsedCRMData> {
+) {
 
-  const buffer = await file.arrayBuffer();
+  const buffer =
+    await file.arrayBuffer();
 
-  const workbook = XLSX.read(buffer, {
-    type: "array",
-  });
+  const workbook =
+    XLSX.read(buffer, {
+      type: "array",
+    });
 
   const sheet =
     workbook.Sheets[
@@ -27,30 +28,32 @@ export async function parseCRMExcel(
     ];
 
   const rows =
-    XLSX.utils.sheet_to_json<
-      Record<string, any>
-    >(sheet, {
+    XLSX.utils.sheet_to_json<Record<string, any>>(
+    sheet,
+    {
       defval: "",
-    });
+    }
+  );
 
   if (!rows.length) {
-    return {
-      months: [],
-      kpis: [],
-    };
+    return null;
   }
 
   const headers =
-    Object.keys(rows[0]);
-
-  const months =
-    headers.filter(
-      (header) =>
-        !FIXED_COLUMNS.includes(header)
+    Object.keys(
+      rows[0] as Record<
+        string,
+        unknown
+      >
     );
+
+  const months = headers.filter(
+    (header) =>
+      /^[A-Za-z]{3}'\d{2}$/.test(header)
+  );
 
   return {
     months,
-    kpis: [],
+    rows,
   };
 }
