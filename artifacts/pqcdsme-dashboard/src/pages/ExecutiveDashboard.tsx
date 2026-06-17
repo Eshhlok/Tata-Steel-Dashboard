@@ -155,26 +155,30 @@ crmData.forEach((kpi) => {
   );
 });
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6">
+    <div className="max-w-none mx-auto space-y-6">
+      <div className="flex justify-end mb-4">
+        <ExcelUploader
+          compact
+          onDataLoaded={(data, rows) => {
+            setCrmData(data);
+            setExcelRows(rows);
+          }}
+        />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="lg:col-span-2">
+        <PlantHealthCard
+          score={trend.current}
+          trend={trend.change}
+        />
+        </div>
+        <div className="lg:col-span-3">
+          <PlantHealthTrend />
+        </div>
 
-      <ExcelUploader
-        onDataLoaded={(
-          data,
-          rows
-        ) => {
-          setCrmData(data);
-          setExcelRows(rows);
-        }}
-      />
+      </div>
 
-      <PlantHealthCard
-        score={trend.current}
-        trend={trend.change}
-      />
-
-      <PlantHealthTrend />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
         
         {crmData.map((kpi) => (
 
@@ -228,7 +232,7 @@ crmData.forEach((kpi) => {
 
       <PerformanceHighlights />
 
-      <UnitRankingTable
+      {/* <UnitRankingTable
         units={units}
       />
 

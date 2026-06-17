@@ -162,13 +162,47 @@ const workHistoryMonths =
       workRollOverall?.[month] !== undefined
   );
 
+const imrHistory = months
+  .filter(
+    month =>
+      imrRollOverall?.[month] !== "" &&
+      imrRollOverall?.[month] !== null &&
+      imrRollOverall?.[month] !== undefined
+  )
+  .map(
+    month =>
+      Number(
+        imrRollOverall?.[month]
+      )
+  );
+
+const overallHistory =
+  workHistory.map(
+    (value, index) =>
+      (
+        value +
+        (imrHistory[index] ?? 0)
+      ) / 2
+  );
+
 const bestMonth =
   getBestMonth(
-    workHistory,
+    overallHistory,
     workHistoryMonths,
     false
   );
-  
+
+const latestMonth =
+  workHistoryMonths[
+    workHistoryMonths.length - 1
+  ] || "";
+
+const displayMonths =
+  workHistoryMonths.slice(-7);
+
+const displayHistory =
+  overallHistory.slice(-7);
+
   const imrCurrent =
     imrRollOverall
       ? getLatestValue(
@@ -199,7 +233,7 @@ const bestMonth =
       workRollOverall?.UOM ??
       "mm/kt",
 
-    best: Math.min(...workHistory),
+    best: Math.min(...overallHistory),
 
     status: getStatus(
       overallValue,
@@ -207,9 +241,9 @@ const bestMonth =
       "Roll Consumption"
     ),
 
-    history: [],
-    historyMonths: [],
-    latestMonth: months[months.length - 1] || "",
+    history: displayHistory,
+    historyMonths: displayMonths,
+    latestMonth: latestMonth,
     bestMonth,
 
     subKPIs: [

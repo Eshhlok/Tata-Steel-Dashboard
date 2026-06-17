@@ -4,15 +4,20 @@ import { useAuth } from "../context/AuthContext";
 import { AdminModal } from "./AdminModal";
 import { api } from "../lib/api";
 import { Link } from "wouter";
+import ExcelUploader from "@/components/ExcelUploader";
 
 const PLANT_ID = 1;
 const POLL_INTERVAL_MS = 10_000; // refresh alerts every 10s
 
 interface TopbarProps {
   onMenuClick: () => void;
+  onCRMDataLoaded?: (
+    data: any,
+    rows: any[]
+  ) => void;
 }
 
-export function Topbar({ onMenuClick }: TopbarProps) {
+export function Topbar({ onMenuClick, onCRMDataLoaded, }: TopbarProps) {
   const { profile, signOut } = useAuth();
 
   const today = new Date().toLocaleDateString('en-GB', {
@@ -91,11 +96,17 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <img src="/favicon.ico" alt="menu" className="w-7 h-7 rounded-md" />
         </button>
         
-        <h1 className="text-base font-semibold text-gray-900 tracking-tight">PQCDSME Dashboard</h1>
+        <h1 className="text-base font-semibold text-gray-900 tracking-tight">Monthly Dashboard</h1>
       </div>
 
       <div className="flex items-center gap-2">
-
+        {onCRMDataLoaded && (
+          <ExcelUploader
+            compact
+            onDataLoaded={onCRMDataLoaded}
+            
+          />
+        )}
         {/* Role badge */}
         {profile?.role && (
           <div className={`px-2.5 py-1 text-xs font-medium rounded-md border capitalize hidden sm:block ${roleColor}`}>

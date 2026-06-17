@@ -12,35 +12,29 @@ export default function PlantHealthCard({
     trend >= 0;
 
   return (
-    <div className="bg-white border rounded-sm p-6">
-
-      <h2 className="text-sm text-gray-500 mb-2">
-        Plant Health Score
+<div className="bg-white border rounded-sm p-4">
+  <div className="flex items-center justify-between">
+    <div>
+      <h2 className="text-xs uppercase tracking-wide text-gray-500">
+        Plant Health
       </h2>
 
-      <div className="flex items-end justify-between">
-
-        <div className="text-5xl font-bold text-blue-600">
-          {score}%
-        </div>
-
-        <div
-          className={`text-sm font-medium ${
-            isPositive
-              ? "text-green-600"
-              : "text-red-600"
-          }`}
-        >
-          {isPositive ? "▲" : "▼"}{" "}
-          {Math.abs(trend)}%
-        </div>
-
+      <div className="text-4xl font-bold text-blue-600 leading-none mt-1">
+        {score}%
       </div>
-
-      <p className="text-sm text-gray-500 mt-2">
-        Overall plant performance
-      </p>
-
     </div>
+
+    <div
+      className={`text-2xl font-bold ${
+        isPositive
+          ? "text-green-600"
+          : "text-red-600"
+      }`}
+    >
+      {isPositive ? "▲" : "▼"}{" "}
+      {Math.abs(trend)}%
+    </div>
+  </div>
+</div>
   );
 }

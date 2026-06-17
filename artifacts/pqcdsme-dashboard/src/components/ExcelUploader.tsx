@@ -6,8 +6,9 @@ interface Props {
     data: CRMKPI[],
     rows: Record<string, any>[]
   ) => void;
+  compact?: boolean;
 }
-export default function ExcelUploader({ onDataLoaded }: Props
+export default function ExcelUploader({ onDataLoaded, compact=false }: Props
 
 ) {
   const handleFileUpload = async (
@@ -47,9 +48,23 @@ export default function ExcelUploader({ onDataLoaded }: Props
     }
   };
 
+if (compact) {
+  return (
+    <label className="px-3 py-1.5 text-xs font-medium bg-slate-800 text-white rounded-md cursor-pointer hover:bg-slate-700">
+      Upload CRM
+
+      <input
+        type="file"
+        accept=".xlsx,.xls"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+    </label>
+  );
+}
+
   return (
     <div className="bg-white border rounded-sm p-4">
-
       <h3 className="text-sm font-medium mb-3">
         CRM Data Source
       </h3>
@@ -60,7 +75,6 @@ export default function ExcelUploader({ onDataLoaded }: Props
         onChange={handleFileUpload}
         className="block w-full text-sm"
       />
-
     </div>
   );
 }
