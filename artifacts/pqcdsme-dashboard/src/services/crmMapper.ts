@@ -13,6 +13,12 @@ export interface CRMKPI {
 
   history: number[];
 
+  historyMonths: string[];
+
+  latestMonth: string;
+
+  bestMonth: string;
+
   subKPIs?: {
     name: string;
     value: number;
@@ -20,7 +26,30 @@ export interface CRMKPI {
   }[];
 }
 
+function getBestMonth(
+  history: number[],
+  historyMonths: string[],
+  higherIsBetter: boolean
+): string {
+  if (
+    history.length === 0 ||
+    historyMonths.length === 0
+  ) {
+    return "";
+  }
 
+  const bestValue =
+    higherIsBetter
+      ? Math.max(...history)
+      : Math.min(...history);
+
+  const index =
+    history.indexOf(bestValue);
+
+  return (
+    historyMonths[index] || ""
+  );
+}
 
 function getLatestValue(
   row: Record<string, any>,
@@ -110,7 +139,36 @@ function buildRollConsumption(
           months
         )
       : 0;
+  
+  const workHistory = months
+  .filter(
+    month =>
+      workRollOverall?.[month] !== "" &&
+      workRollOverall?.[month] !== null &&
+      workRollOverall?.[month] !== undefined
+  )
+  .map(
+    month =>
+      Number(
+        workRollOverall?.[month]
+      )
+  );
 
+const workHistoryMonths =
+  months.filter(
+    month =>
+      workRollOverall?.[month] !== "" &&
+      workRollOverall?.[month] !== null &&
+      workRollOverall?.[month] !== undefined
+  );
+
+const bestMonth =
+  getBestMonth(
+    workHistory,
+    workHistoryMonths,
+    false
+  );
+  
   const imrCurrent =
     imrRollOverall
       ? getLatestValue(
@@ -150,6 +208,9 @@ function buildRollConsumption(
     ),
 
     history: [],
+    historyMonths: [],
+    latestMonth: months[months.length - 1] || "",
+    bestMonth,
 
     subKPIs: [
       {
@@ -218,6 +279,35 @@ function buildMetal(
           months
         )
       : 0;
+  
+  const drossHistory = months
+  .filter(
+    month =>
+      drossOverall?.[month] !== "" &&
+      drossOverall?.[month] !== null &&
+      drossOverall?.[month] !== undefined
+  )
+  .map(
+    month =>
+      Number(
+        drossOverall?.[month]
+      )
+  );
+
+  const drossHistoryMonths =
+    months.filter(
+      month =>
+        drossOverall?.[month] !== "" &&
+        drossOverall?.[month] !== null &&
+        drossOverall?.[month] !== undefined
+    );
+
+  const bestMonth =
+    getBestMonth(
+      drossHistory,
+      drossHistoryMonths,
+      false
+    );
 
   const overcoatingCurrent =
     overcoatingOverall
@@ -236,7 +326,6 @@ function buildMetal(
       drossOverall?.["FY26"] ||
       0
     );
-
   return {
     title: "Metal",
 
@@ -254,6 +343,9 @@ function buildMetal(
     ),
 
     history: [],
+    historyMonths: [],
+    latestMonth: months[months.length - 1] || "",
+    bestMonth,
 
     subKPIs: [
       {
@@ -334,6 +426,28 @@ function buildRollingOilConsumption(
           )
       );
 
+  const historyMonths =
+    months.filter(
+      (month) =>
+        overallRow[month] !== ""
+    );
+
+  const latestMonth =
+    historyMonths[
+      historyMonths.length - 1
+    ] || "";
+
+  const bestMonth =
+    getBestMonth(
+      history,
+      historyMonths,
+      false
+    );
+  const displayMonths =
+    historyMonths.slice(-7);
+
+  const displayHistory =
+    history.slice(-7);
   return {
     title:
       "Rolling Oil Consumption",
@@ -351,7 +465,12 @@ function buildRollingOilConsumption(
       "Rolling Oil consumption"
     ),
 
-    history,
+    history:displayHistory,
+    historyMonths: displayMonths,
+
+    latestMonth,
+
+    bestMonth,
   };
 }
 
@@ -398,7 +517,31 @@ function buildLineYield(
             overallRow[month]
           )
       );
+  
+  const historyMonths =
+    months.filter(
+      month =>
+        overallRow[month] !== "" &&
+        overallRow[month] !== null &&
+        overallRow[month] !== undefined
+    );
 
+  const latestMonth =
+    historyMonths[
+      historyMonths.length - 1
+    ] || "";
+
+  const bestMonth =
+    getBestMonth(
+      history,
+      historyMonths,
+      true
+    );
+  const displayMonths =
+    historyMonths.slice(-7);
+
+  const displayHistory =
+    history.slice(-7);
   return {
     title: "Line Yield",
 
@@ -415,7 +558,11 @@ function buildLineYield(
       "Line Yield"
     ),
 
-    history,
+    history: displayHistory,
+    historyMonths: displayMonths,
+
+    latestMonth,
+    bestMonth,
   };
 }
 
@@ -460,7 +607,31 @@ export function mapCRMRows(
                 row[month]
               )
           );
+        
+      const historyMonths =
+        months.filter(
+          (month) =>
+            row[month] !== ""
+        );
 
+      const latestMonth =
+        historyMonths[
+          historyMonths.length - 1
+        ] || "";
+
+      const bestMonth =
+        getBestMonth(
+          history,
+          historyMonths,
+          false
+        );
+
+      const displayMonths =
+        historyMonths.slice(-7);
+
+      const displayHistory =
+        history.slice(-7);
+      
       return {
         title: row.KPI,
 
@@ -476,7 +647,12 @@ export function mapCRMRows(
           row.KPI
         ),
 
-        history,
+        history: displayHistory,
+        historyMonths: displayMonths,
+
+        latestMonth,
+
+        bestMonth,
       };
     });
 
@@ -484,10 +660,6 @@ export function mapCRMRows(
     buildRollConsumption(
       rows,
       months
-    );
-    console.log(
-    "ROLL CARD:",
-    rollConsumption
     );
   
   const rollingOil =
@@ -528,3 +700,5 @@ export function mapCRMRows(
       : []),
   ];
 }
+
+

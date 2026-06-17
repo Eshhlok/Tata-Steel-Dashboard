@@ -22,6 +22,11 @@ interface KPIOverviewCardProps {
   status: "green" | "yellow" | "red";
 
   history: number[];
+  historyMonths?: string[];
+
+  latestMonth?: string;
+
+  bestMonth?: string;
 
   subKPIs?: SubKPI[];
 
@@ -39,6 +44,9 @@ export default function KPIOverviewCard({
   best,
   status,
   history,
+  historyMonths = [],
+  latestMonth,
+  bestMonth,
   subKPIs,
   onSubKPIClick,
   onCardClick,
@@ -151,7 +159,11 @@ export default function KPIOverviewCard({
           >
             {formatValue(value)}
           </h2>
-
+          {latestMonth && (
+            <span className="text-xs text-gray-500 mb-1">
+              ({latestMonth})
+            </span>
+          )}
           {uom && (
             <span className="text-xs text-gray-500 mb-1">
               ({uom})
@@ -228,11 +240,17 @@ export default function KPIOverviewCard({
 
           <p className="text-sm font-medium text-gray-700">
             {formatValue(best)}
+
+            {bestMonth && (
+              <span className="text-xs text-gray-500 ml-1">
+                ({bestMonth})
+              </span>
+            )}
           </p>
         </div>
       </div>
 
-      <div className="h-20 mt-4">
+      <div className="h-14 mt-4">
         <p className="text-xs text-gray-400 mb-2">
           7-Month Trend
         </p>
@@ -257,6 +275,18 @@ export default function KPIOverviewCard({
             />
           </LineChart>
         </ResponsiveContainer>
+        {historyMonths.length > 0 && (
+          <div className="grid grid-cols-7 gap-1 mt-1">
+            {historyMonths.map((month) => (
+              <div
+                key={month}
+                className="text-[10px] text-center text-gray-500"
+              >
+                {month}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

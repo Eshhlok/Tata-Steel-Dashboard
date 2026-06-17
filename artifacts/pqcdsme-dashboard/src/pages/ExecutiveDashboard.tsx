@@ -176,6 +176,9 @@ console.log(
             best={kpi.best}
             status={kpi.status}
             history={kpi.history}
+            historyMonths={kpi.historyMonths}
+            latestMonth={kpi.latestMonth}
+            bestMonth={kpi.bestMonth}
             subKPIs={kpi.subKPIs}
             onSubKPIClick={(name) =>
               setSelectedDrilldown({
