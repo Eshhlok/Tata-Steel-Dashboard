@@ -144,6 +144,16 @@ console.log(
         .includes("metal")
   )
 );
+console.log("CRM DATA:", crmData);
+crmData.forEach((kpi) => {
+  console.log(
+    kpi.title,
+    "BEST:",
+    kpi.best,
+    "BEST MONTH:",
+    kpi.bestMonth
+  );
+});
   return (
     <div className="max-w-[1600px] mx-auto space-y-6">
 
@@ -165,7 +175,7 @@ console.log(
       <PlantHealthTrend />
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-
+        
         {crmData.map((kpi) => (
 
           <KPIOverviewCard

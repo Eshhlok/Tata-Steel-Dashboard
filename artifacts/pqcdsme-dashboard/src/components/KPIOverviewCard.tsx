@@ -280,9 +280,21 @@ export default function KPIOverviewCard({
             {historyMonths.map((month) => (
               <div
                 key={month}
-                className="text-[10px] text-center text-gray-500"
+                className="text-[13px] text-center text-gray-500"
               >
                 {month}
+              </div>
+            ))}
+          </div>
+        )}
+        {history.length > 0 && (
+          <div className="grid grid-cols-7 gap-1 mt-1">
+            {history.map((value, index) => (
+              <div
+                key={index}
+                className="text-[13px] text-center font-medium text-gray-700"
+              >
+                {formatValue(value)}
               </div>
             ))}
           </div>

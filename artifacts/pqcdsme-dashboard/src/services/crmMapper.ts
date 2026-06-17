@@ -199,7 +199,7 @@ const bestMonth =
       workRollOverall?.UOM ??
       "mm/kt",
 
-    best: fy26,
+    best: Math.min(...workHistory),
 
     status: getStatus(
       overallValue,
@@ -334,7 +334,7 @@ function buildMetal(
     uom:
       drossOverall?.UOM || "%",
 
-    best: fy26,
+    best: Math.min(...drossHistory),
 
     status: getStatus(
       overallValue,
@@ -457,7 +457,7 @@ function buildRollingOilConsumption(
     uom:
       overallRow.UOM || "",
 
-    best: fy26,
+    best: Math.min(...history),
 
     status: getStatus(
       current,
@@ -550,7 +550,7 @@ function buildLineYield(
     uom:
       overallRow.UOM || "%",
 
-    best: fy26,
+    best: Math.min(...history),
 
     status: getStatus(
       current,
@@ -608,6 +608,7 @@ export function mapCRMRows(
               )
           );
         
+
       const historyMonths =
         months.filter(
           (month) =>
@@ -639,7 +640,7 @@ export function mapCRMRows(
 
         uom: row.UOM || "",
 
-        best: fy26,
+        best: Math.min(...history),
 
         status: getStatus(
           current,
