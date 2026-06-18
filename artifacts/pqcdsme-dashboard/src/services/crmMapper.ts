@@ -18,6 +18,8 @@ export interface CRMKPI {
   latestMonth: string;
 
   bestMonth: string;
+  fy26Actual: number;
+  fy27ABP: number;
 
   subKPIs?: {
     name: string;
@@ -213,13 +215,32 @@ const displayHistory =
   const overallValue =
     (workCurrent + imrCurrent) / 2;
 
-  const fy26 =
-    Number(
-      workRollOverall?.["FY26 "] ||
-      workRollOverall?.["FY26"] ||
-      0
-    );
+  const workRollFY26 = Number(
+    workRollOverall?.["FY26 "] ??
+    workRollOverall?.["FY26"] ??
+    0
+  );
 
+  const imrRollFY26 = Number(
+    imrRollOverall?.["FY26 "] ??
+    imrRollOverall?.["FY26"] ??
+    0
+  );
+
+  const fy26 =
+    (workRollFY26 + imrRollFY26) / 2;
+
+  const workRollFY27ABP = Number(
+    workRollOverall?.["FY27 ABP"] ?? 0
+  );
+
+  const imrRollFY27ABP = Number(
+    imrRollOverall?.["FY27 ABP"] ?? 0
+  );
+
+  const fy27ABP =
+    (workRollFY27ABP + imrRollFY27ABP) / 2;
+  
   return {
     title: "Roll Consumption",
 
@@ -243,7 +264,8 @@ const displayHistory =
     historyMonths: displayMonths,
     latestMonth: latestMonth,
     bestMonth,
-
+    fy26Actual: fy26,
+    fy27ABP: fy27ABP,
     subKPIs: [
       {
         name: "Work Roll",
@@ -375,12 +397,32 @@ function buildMetal(
   const overallValue =
     (drossCurrent+overcoatingCurrent)/2;
 
+  const drossFY26 = Number(
+    drossOverall?.["FY26 "] ??
+    drossOverall?.["FY26"] ??
+    0
+  );
+
+  const overcoatingFY26 = Number(
+    overcoatingOverall?.["FY26 "] ??
+    overcoatingOverall?.["FY26"] ??
+    0
+  );
+
   const fy26 =
-    Number(
-      drossOverall?.["FY26 "] ||
-      drossOverall?.["FY26"] ||
-      0
-    );
+    (drossFY26 + overcoatingFY26) / 2;
+
+  const drossFY27ABP = Number(
+    drossOverall?.["FY27 ABP"] ?? 0
+  );
+
+  const overcoatingFY27ABP = Number(
+    overcoatingOverall?.["FY27 ABP"] ?? 0
+  );
+
+  const fy27ABP =
+    (drossFY27ABP + overcoatingFY27ABP) / 2;  
+  
   const displayMonths =
     drossHistoryMonths.slice(-7);
 
@@ -412,7 +454,8 @@ function buildMetal(
     historyMonths: displayMonths,
     latestMonth: latestMonth,
     bestMonth,
-
+    fy26Actual: fy26,
+    fy27ABP: fy27ABP,
     subKPIs: [
       {
         name: "Dross",
@@ -524,7 +567,10 @@ function buildRollingOilConsumption(
       overallRow.UOM || "",
 
     best: Math.min(...history),
-
+    fy26Actual: fy26,
+    fy27ABP: Number(
+      overallRow?.["FY27 ABP"] || 0
+    ),
     status: getStatus(
       current,
       fy26,
@@ -617,7 +663,10 @@ function buildLineYield(
       overallRow.UOM || "%",
 
     best: Math.min(...history),
-
+    fy26Actual: fy26,
+    fy27ABP: Number(
+      overallRow?.["FY27 ABP"] || 0
+    ),
     status: getStatus(
       current,
       fy26,
@@ -707,7 +756,10 @@ export function mapCRMRows(
         uom: row.UOM || "",
 
         best: Math.min(...history),
-
+        fy26Actual: fy26,
+        fy27ABP: Number(
+          row?.["FY27 ABP"] || 0
+        ),
         status: getStatus(
           current,
           fy26,

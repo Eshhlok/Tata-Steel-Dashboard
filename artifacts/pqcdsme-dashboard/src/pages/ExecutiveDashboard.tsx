@@ -18,6 +18,7 @@ import PlantHealthTrend from "@/components/PlantHealthTrend";
 import PerformanceHighlights from "@/components/PerformanceHighlights";
 import ExecutiveInsights from "@/components/ExecutiveInsights";
 
+
 import { useState } from "react";
 
 import {
@@ -71,6 +72,9 @@ export default function ExecutiveDashboard() {
       ),
       previousStatuses
     );
+  
+  const latestMonth =
+    crmData[0]?.latestMonth ?? "";
 
   const drilldownRows =
     selectedDrilldown
@@ -138,6 +142,13 @@ export default function ExecutiveDashboard() {
         </div>
 
       </div>
+      
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">CRM KPI Overview</h2>
+        <span className="text-s text-muted-foreground">
+          Reporting Month: {latestMonth}
+        </span>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-stretch">
         
@@ -152,7 +163,7 @@ export default function ExecutiveDashboard() {
             status={kpi.status}
             history={kpi.history}
             historyMonths={kpi.historyMonths}
-            latestMonth={kpi.latestMonth}
+            
             bestMonth={kpi.bestMonth}
             subKPIs={kpi.subKPIs}
             onSubKPIClick={(name) =>

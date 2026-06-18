@@ -24,7 +24,7 @@ interface KPIOverviewCardProps {
   history: number[];
   historyMonths?: string[];
 
-  latestMonth?: string;
+  
 
   bestMonth?: string;
 
@@ -45,7 +45,7 @@ export default function KPIOverviewCard({
   status,
   history,
   historyMonths = [],
-  latestMonth,
+  
   bestMonth,
   subKPIs,
   onSubKPIClick,
@@ -69,21 +69,21 @@ export default function KPIOverviewCard({
 
   const statusConfig = {
     green: {
-      label: "Better than FY26",
+      label: "Better than FY26 actual",
       badge:
         "bg-green-100 text-green-700",
       accent: "#1D9E75",
     },
 
     yellow: {
-      label: "At FY26 Level",
+      label: "At FY26 actual",
       badge:
         "bg-yellow-100 text-yellow-700",
       accent: "#BA7517",
     },
 
     red: {
-      label: "Worse than FY26",
+      label: "Worse than FY26 actual",
       badge:
         "bg-red-100 text-red-700",
       accent: "#E24B4A",
@@ -145,8 +145,12 @@ export default function KPIOverviewCard({
       }}
     >
       <div>
-        <p className="text-sm text-gray-500">
-          {title}
+        <p className="text-s text-gray-500">
+          {title} {uom && (
+            <span className="text-s text-gray-500 mb-1">
+              ({uom})
+            </span>
+          )}
         </p>
 
         <div className="flex items-end gap-2 mt-2">
@@ -159,16 +163,8 @@ export default function KPIOverviewCard({
           >
             {formatValue(value)}
           </h2>
-          {latestMonth && (
-            <span className="text-xs text-gray-500 mb-1">
-              ({latestMonth})
-            </span>
-          )}
-          {uom && (
-            <span className="text-xs text-gray-500 mb-1">
-              ({uom})
-            </span>
-          )}
+
+          
         </div>
 
         <div

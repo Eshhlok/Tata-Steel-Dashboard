@@ -9,22 +9,44 @@ export default function ExecutiveInsights({
 }: Props) {
   const alerts: string[] = [];
 
-  kpis.forEach((kpi) => {
-    if (kpi.status === "red") {
-      alerts.push(
-        `${kpi.title} is performing below FY26 benchmark`
-      );
-    }
+kpis.forEach((kpi) => {
+  if (kpi.status === "red") {
 
-    if (
-      kpi.title === "Line Yield" &&
-      kpi.value === 0
-    ) {
-      alerts.push(
-        "Line Yield data unavailable"
-      );
-    }
-  });
+    const higherIsBetter =
+      kpi.title === "Line Yield";
+
+    const fy26Comparison =
+      higherIsBetter
+        ? kpi.value >= kpi.fy26Actual
+          ? "above"
+          : "below"
+        : kpi.value <= kpi.fy26Actual
+          ? "above"
+          : "below";
+
+    const fy27Comparison =
+      higherIsBetter
+        ? kpi.value >= kpi.fy27ABP
+          ? "above"
+          : "below"
+        : kpi.value <= kpi.fy27ABP
+          ? "above"
+          : "below";
+
+    alerts.push(
+      `${kpi.title} (${kpi.value}) is performing ${fy26Comparison} FY26 Actual (${kpi.fy26Actual}) and ${fy27Comparison} FY27 ABP (${kpi.fy27ABP})`
+    );
+  }
+
+  if (
+    kpi.title === "Line Yield" &&
+    kpi.value === 0
+  ) {
+    alerts.push(
+      "Line Yield data unavailable"
+    );
+  }
+});
 
   const achievements = kpis
     .filter(
@@ -48,7 +70,7 @@ export default function ExecutiveInsights({
     kpis.filter(
         k => k.status === "green"
     ).length;
-
+  
   return (
     <div className="mt-4 rounded-xl border bg-card p-4">
       <h3 className="font-semibold mb-4">
