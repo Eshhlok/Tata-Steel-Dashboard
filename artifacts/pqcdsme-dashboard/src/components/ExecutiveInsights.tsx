@@ -34,7 +34,7 @@ kpis.forEach((kpi) => {
           : "worse than";
 
     alerts.push(
-      `${kpi.title} (${kpi.value}) is performing ${fy26Comparison} FY26 Actual (${kpi.fy26Actual}) and ${fy27Comparison} FY27 ABP (${kpi.fy27ABP})`
+      `${kpi.title} (${kpi.value.toFixed(2)}) is performing ${fy26Comparison} FY26 Actual (${kpi.fy26Actual.toFixed(2)}) and ${fy27Comparison} FY27 ABP (${kpi.fy27ABP.toFixed(2)})`
     );
   }
 
