@@ -32,13 +32,6 @@ export default function ExcelUploader({ onDataLoaded, compact=false }: Props
             parsedData.months
         );  
         onDataLoaded(mappedData, parsedData.rows);
-        console.log(
-            parsedData.rows.filter(
-                row =>
-                row.KPI ===
-                "Roll Consumption"
-            )
-            );
 
     } catch (error) {
       console.error(

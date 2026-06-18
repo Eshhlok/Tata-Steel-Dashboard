@@ -34,7 +34,9 @@ export async function parseCRMExcel(
       defval: "",
     }
   );
-
+  console.log(
+  rows.slice(25, 40)
+);
   if (!rows.length) {
     return null;
   }

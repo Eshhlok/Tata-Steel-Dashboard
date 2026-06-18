@@ -16,6 +16,7 @@ import UnitRankingTable from "@/components/UnitRankingTable";
 import BuildingOverviewCard from "@/components/BuildingOverviewCard";
 import PlantHealthTrend from "@/components/PlantHealthTrend";
 import PerformanceHighlights from "@/components/PerformanceHighlights";
+import ExecutiveInsights from "@/components/ExecutiveInsights";
 
 import { useState } from "react";
 
@@ -106,54 +107,11 @@ export default function ExecutiveDashboard() {
         )
       : [];
     
-    console.log(
-      "SELECTED CARD:",
-      selectedCardKPI
-    );
+    
 
-    console.log(
-      "SELECTED DRILLDOWN:",
-      selectedDrilldown
-    );
+    
 
-    console.log(
-      "CARD ROWS:",
-      cardDrilldownRows
-    );
-
-    console.log(
-      "DRILLDOWN ROWS:",
-      drilldownRows
-    );
-    console.log(
-  "ROLLING ROWS:",
-  excelRows.filter(
-    row =>
-      String(row.KPI)
-        .toLowerCase()
-        .includes("rolling")
-  )
-);
-
-console.log(
-  "METAL ROWS:",
-  excelRows.filter(
-    row =>
-      String(row.KPI)
-        .toLowerCase()
-        .includes("metal")
-  )
-);
-console.log("CRM DATA:", crmData);
-crmData.forEach((kpi) => {
-  console.log(
-    kpi.title,
-    "BEST:",
-    kpi.best,
-    "BEST MONTH:",
-    kpi.bestMonth
-  );
-});
+    
   return (
     <div className="max-w-none mx-auto space-y-6">
       <div className="flex justify-end mb-4">
@@ -166,14 +124,17 @@ crmData.forEach((kpi) => {
         />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-4">
         <PlantHealthCard
           score={trend.current}
           trend={trend.change}
         />
+        <ExecutiveInsights kpis={crmData} />
         </div>
         <div className="lg:col-span-3">
-          <PlantHealthTrend />
+          <PlantHealthTrend 
+            kpis={crmData}
+          />
         </div>
 
       </div>
@@ -218,7 +179,7 @@ crmData.forEach((kpi) => {
 
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/*<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         <AchievementsCard
           achievements={achievements}
@@ -228,9 +189,9 @@ crmData.forEach((kpi) => {
           alerts={alerts}
         />
 
-      </div>
+      </div>*/}
 
-      <PerformanceHighlights />
+      {/* <PerformanceHighlights /> *}
 
       {/* <UnitRankingTable
         units={units}

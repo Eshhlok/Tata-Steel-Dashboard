@@ -210,8 +210,6 @@ const displayHistory =
           months
         )
       : 0;
-        console.log("WORK CURRENT:", workCurrent);
-        console.log("IMR CURRENT:", imrCurrent);
   const overallValue =
     (workCurrent + imrCurrent) / 2;
 
@@ -286,17 +284,17 @@ function buildMetal(
   const drossOverall =
     rows.find(
       row =>
-        row.KPI === "Metal" &&
-        row["Sub-KPI"] === "Dross" &&
-        row.Unit === "Overall"
+        row.KPI ?.toString().trim() === "Metal" &&
+        row["Sub-KPI"]?.toString().trim() === "Dross" &&
+        row.Unit ?.toString().trim()=== "Overall"
     );
 
   const overcoatingOverall =
     rows.find(
       row =>
-        row.KPI === "Metal" &&
-        row["Sub-KPI"] === "Overcoating" &&
-        row.Unit === "Overall"
+        row.KPI ?.toString().trim()=== "Metal" &&
+        row["Sub-KPI"]?.toString().trim() === "Overcoating" &&
+        row.Unit ?.toString().trim()=== "Overall"
     );
 
   if (
@@ -335,10 +333,33 @@ function buildMetal(
         drossOverall?.[month] !== null &&
         drossOverall?.[month] !== undefined
     );
+  
+  const overcoatingHistory = months
+    .filter(
+      month =>
+        overcoatingOverall?.[month] !== "" &&
+        overcoatingOverall?.[month] !== null &&
+        overcoatingOverall?.[month] !== undefined
+    )
+    .map(
+      month =>
+        Number(
+          overcoatingOverall?.[month]
+        )
+    );
+  
+  const overallHistory =
+    drossHistory.map(
+      (value, index) =>
+        (
+          value +
+          (overcoatingHistory[index] ?? 0)
+        ) / 2
+    );
 
   const bestMonth =
     getBestMonth(
-      drossHistory,
+      overallHistory,
       drossHistoryMonths,
       false
     );
@@ -352,7 +373,7 @@ function buildMetal(
       : 0;
 
   const overallValue =
-    drossCurrent;
+    (drossCurrent+overcoatingCurrent)/2;
 
   const fy26 =
     Number(
@@ -360,6 +381,17 @@ function buildMetal(
       drossOverall?.["FY26"] ||
       0
     );
+  const displayMonths =
+    drossHistoryMonths.slice(-7);
+
+  const displayHistory =
+    overallHistory.slice(-7);
+
+  const latestMonth =
+    drossHistoryMonths[
+      drossHistoryMonths.length - 1
+    ] || "";
+
   return {
     title: "Metal",
 
@@ -368,7 +400,7 @@ function buildMetal(
     uom:
       drossOverall?.UOM || "%",
 
-    best: Math.min(...drossHistory),
+    best: Math.min(...overallHistory),
 
     status: getStatus(
       overallValue,
@@ -376,9 +408,9 @@ function buildMetal(
       "Metal"
     ),
 
-    history: [],
-    historyMonths: [],
-    latestMonth: months[months.length - 1] || "",
+    history: displayHistory,
+    historyMonths: displayMonths,
+    latestMonth: latestMonth,
     bestMonth,
 
     subKPIs: [
