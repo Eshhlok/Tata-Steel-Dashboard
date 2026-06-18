@@ -18,20 +18,20 @@ kpis.forEach((kpi) => {
     const fy26Comparison =
       higherIsBetter
         ? kpi.value >= kpi.fy26Actual
-          ? "above"
-          : "below"
+          ? "better than"
+          : "worse than"
         : kpi.value <= kpi.fy26Actual
-          ? "above"
-          : "below";
+          ? "better than"
+          : "worse than";
 
     const fy27Comparison =
       higherIsBetter
         ? kpi.value >= kpi.fy27ABP
-          ? "above"
-          : "below"
+          ? "better than"
+          : "worse than"
         : kpi.value <= kpi.fy27ABP
-          ? "above"
-          : "below";
+          ? "better than"
+          : "worse than";
 
     alerts.push(
       `${kpi.title} (${kpi.value}) is performing ${fy26Comparison} FY26 Actual (${kpi.fy26Actual}) and ${fy27Comparison} FY27 ABP (${kpi.fy27ABP})`
