@@ -114,7 +114,7 @@ kpis.forEach((kpi) => {
                         ? "high"
                         : "low"}
                     {" "}
-                    of {kpi.best} {kpi.uom}
+                    of {kpi.best.toFixed(2)} {kpi.uom}
                     {" "}
                     in {kpi.bestMonth}
                 </li>
